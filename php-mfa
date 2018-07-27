@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <meat charset="UTF-8">
+        <title></title>
+    </head>
+    <body>
+        <form action="input.php" method="get">
+        <?php
+            $time = array ('5 min', '10 min', '15 min', '30 min', '1 hour');
+            echo '<select name = "time">';
+            for($i = 0; $i < count($time); $i++)
+            {
+                echo '<option>' . $time[$i] . '</option>';
+            }
+            echo '<select>';
+        ?>
+        <input type="submit">
+        </form>
+        <form>
+        <?php
+
+            $duration = $_GET['time'];
+
+            echo 'Access granted for: ' . $duration;
+
+        ?>
+        </form>
+        <?php
+        //whether ip is from share internet
+        if (!empty($_SERVER['HTTP_CLIENT_IP']))
+        {
+          $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+        }
+        //whether ip is from proxy
+        elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+        {
+          $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+        //whether ip is from remote address
+        else
+        {
+          $ip_address = $_SERVER['REMOTE_ADDR'];
+        }
+        echo $ip_address;
+
+        $content = "<br>iptales -A INPUT -p tcp -s " . $ip_address . " --dport 22 --time=" . $duration . " --ctstate NEW,ESTABLISHED -j ACCEPT";
+
+        $file = "/test/ip.txt";
+
+        file_put_contents($file, $content);
+
+        $output = shell_exec('cat /test/ip.txt');
+
+        echo $output
+
+
+        ?>
+        <form>
+
+        </form>
+    </body>
+</html>
